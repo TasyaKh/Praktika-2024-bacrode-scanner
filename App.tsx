@@ -20,6 +20,7 @@ import BarcodeScanner from "./src/screens/BarcodeScanner.tsx";
 import {DatabaseConnectionProvider} from "./src/hooks/db.createConnection";
 import InventoryScreen from "./src/screens/InventoryScreen.tsx";
 import TabBar from "./src/components/nav/TabBar.tsx";
+import ProductsScreen from "./src/screens/ProductsScreen.tsx";
 
 // import 'react-native-gesture-handler'
 
@@ -27,7 +28,7 @@ const Tab = createBottomTabNavigator();
 
 function AppTabs() {
     return (
-        <Tab.Navigator initialRouteName={"barcode"} tabBar={props => <TabBar {...props} />} >
+        <Tab.Navigator screenOptions={{headerShown:false}} initialRouteName={"barcode"} tabBar={props => <TabBar {...props} />} >
             <Tab.Screen name="barcode" component={BarcodeScanner} />
             <Tab.Screen name="inventory" component={InventoryScreen} />
         </Tab.Navigator>
@@ -72,10 +73,10 @@ function App(): React.JSX.Element {
                                 theme={theme.mode === "dark" ? customDarkThemeNav : customLightThemeNav}>
                                     <Stack.Navigator initialRouteName={"HomeTabs"} screenOptions={{headerShown:false}}>
                                         <Stack.Screen name="HomeTabs" component={AppTabs}/>
+                                        <Stack.Screen name="Products" component={ProductsScreen} />
                                     </Stack.Navigator>
                                 </NavigationContainer>
                         </View>
-
                     </GestureHandlerRootView>
                 </SafeAreaView>
 
