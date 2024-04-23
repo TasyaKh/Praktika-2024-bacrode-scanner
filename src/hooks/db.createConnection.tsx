@@ -4,6 +4,10 @@ import { DatabaseConnectionContext } from "../context/connectionCtx";
 // import { PagesService } from "../db/chapters.ts";
 import setupConnectionLocalDb from "../config/db.connection";
 import { ActivityIndicator } from "react-native";
+import { ProductsService } from "../db/services/products.ts";
+import { DocumentsService } from "../db/services/documents.ts";
+import { ProductOperations } from "../db/entities/product-operations.entity.ts";
+import { ProductsOperationsService } from "../db/services/products-operations.ts";
 
 interface Props {
   children: ReactNode;
@@ -39,7 +43,9 @@ export const DatabaseConnectionProvider: React.FC<Props> = ({ children }) => {
   return (
     <DatabaseConnectionContext.Provider
       value={{
-        // chaptersRepo: new PagesService(connection)
+        prService: new ProductsService(connection),
+        productOpService: new ProductsOperationsService(connection),
+        docService: new DocumentsService(connection)
       }}
     >
       {children}
