@@ -1,55 +1,133 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ThemeCtx } from "../context/themeCtx.ts";
 import { colors } from "../config/theme.ts";
-import { Route } from "@react-navigation/native";
-import { Icon } from "@rneui/base";
-import BackButton from "../components/buttons/BackButton.tsx";
+import { RouteProp } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { useDatabaseConnection } from "../hooks/db.createConnection.tsx";
+import { FAB, Icon } from "@rneui/base";
+import { Product } from "../db/entities/product.entity.ts";
 
-interface ProductsScreenProps {
-  route: Route<any>;
-  navigation: any;
-}
-
-const products = [
-  { id: 1, name: "Product 1", price: 0 },
-  { id: 2, name: "Product 2", price: 0 },
-  { id: 3, name: "Product 3", price: 0 }
-  // Add more product objects as needed
-];
-
-const ProductList = () => {
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.price}>${item.price.toFixed(2)}</Text>
-    </View>
-  );
-
-  return (
-    <FlatList
-      data={products}
-      renderItem={renderItem}
-      keyExtractor={item => item.id.toString()}
-    />
-  );
+// Define the parameters type
+type RootStackParamList = {
+  Home: undefined;
+  Products: { id_document: number }; // Define the parameter with type
+  BarcodeScannerBack: { onPhotoTaken: (code: string) => void };
 };
+
+// Define the navigation props type for Details screen
+type ProductsScreenNavigationProp = StackNavigationProp<RootStackParamList, "Products">;
+
+// Define the props for the Details screen
+type ProductsScreenRouteProp = RouteProp<RootStackParamList, "Products">;
+
+type ProductsScreenProps = {
+  navigation: ProductsScreenNavigationProp;
+  route: ProductsScreenRouteProp;
+};
+
 
 const ProductsScreen: React.FC<ProductsScreenProps> = ({ route, navigation }) => {
   const theme = useContext(ThemeCtx);
   let activeColors = colors[theme.mode];
 
-  const params = route.params;
+  const { id_document } = route.params;
+  const [scannedCode, setScannedCode] = useState("-");
+
+  const { prService } = useDatabaseConnection();
+  const [dataProd, setDataProd] = useState<{
+    prod: Product[],
+    count: number
+  }>();
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const getProducts = async () => {
+
+    await prService.findProducts({ id_document: id_document }).then((data) => {
+      setDataProd({ prod: data[0], count: data[1] });
+      // console.log("dsd", data[0])
+    });
+
+  };
+
+  const addProduct = async (code: string) => {
+    await prService.create({ code: code, date_create: new Date(), id_document: id_document }).then((data) => {
+      getProducts();
+    });
+  };
+
+  const deleteProduct = async (id: number) => {
+    await prService.delete(id).then((data) => {
+      getProducts();
+    });
+  };
+
+  const handleTakePhoto = () => {
+    navigation.navigate("BarcodeScannerBack", {
+      onPhotoTaken: async (item) => {
+        setScannedCode(item);
+        await addProduct(item);
+      }
+    });
+  };
+
+
+  useEffect(() => {
+
+
+    navigation.setOptions({
+      title: `Документ ${id_document}`
+    });
+
+    getProducts().then(() => {
+    });
+  }, []);
+
+  const ProductList = () => {
+    const renderItem = ({ item, index }: { item: Product, index: number }) => (
+      <View style={styles.item}>
+        <Text style={styles.name}>{index + 1}</Text>
+        <Text style={styles.code}>{item.code ?? "-"}</Text>
+        <Text style={styles.name}>{item.date_create.toLocaleDateString()} {item.date_create.toLocaleTimeString()}</Text>
+        <TouchableOpacity onPress={() => deleteProduct(item.id)}
+                          style={{ backgroundColor: activeColors.secondary, padding: 5 }}>
+          <Icon name={"delete"} color={activeColors.lightRed}></Icon>
+        </TouchableOpacity>
+      </View>
+    );
+
+    return (
+      <FlatList
+        data={dataProd?.prod}
+        renderItem={renderItem}
+        keyExtractor={item => item.id.toString()}
+      />
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <BackButton onPressed={() => navigation.goBack()}/>
-      {/* products */}
-      <View >
-        <Text> params {params?.id_document}</Text>
-        <ProductList />
+      <View>
+        <Text style={{ color: activeColors.text }}>Последний код: {scannedCode}</Text>
+        {dataProd && dataProd.count > 0 ? <ProductList /> :
+          <Text style={{ color: activeColors.text_secondary, fontSize: 16, paddingVertical: 20 }}>Данных нет (сканируйте
+            код)</Text>}
       </View>
-
+      {/* done */}
+      {/*<FAB*/}
+      {/*  style={[styles.fabDone]}*/}
+      {/*  color={activeColors.lightGreen}*/}
+      {/*  onPress={addProduct}*/}
+      {/*  icon={<Icon name={"done"} color={activeColors.primary} />}*/}
+      {/*/>*/}
+      {/* photo */}
+      <FAB
+        style={[styles.fabPhoto]}
+        color={activeColors.main}
+        onPress={handleTakePhoto}
+        icon={<Icon name={"qr-code"} color={activeColors.primary} />}
+      />
     </View>
   );
 };
@@ -68,11 +146,23 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ccc"
   },
   name: {
-    fontSize: 18
+    fontSize: 12
   },
-  price: {
+  code: {
     fontSize: 16,
     fontWeight: "bold"
+  },
+  fabDone: {
+    position: "absolute",
+    margin: 20,
+    left: 0,
+    bottom: 50
+  },
+  fabPhoto: {
+    position: "absolute",
+    margin: 20,
+    right: 0,
+    bottom: 50
   }
 });
 

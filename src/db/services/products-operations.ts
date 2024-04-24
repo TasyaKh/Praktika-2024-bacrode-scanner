@@ -1,6 +1,7 @@
 import { DataSource, Repository } from "typeorm/browser";
 import { ProductDto } from "../dto/product.dto.ts";
 import { ProductOperations } from "../entities/product-operations.entity.ts";
+import { ProductOperationsDto } from "../dto/product-operations.dto.ts";
 
 export class ProductsOperationsService {
   private productOperationsRepository?: Repository<ProductOperations>;
@@ -9,17 +10,21 @@ export class ProductsOperationsService {
     this.productOperationsRepository = appDataSource?.getRepository(ProductOperations);
   }
 
-  async create(prOpDto: ProductOperations) {
+  async create(prOpDto: ProductOperationsDto) {
     return await this.productOperationsRepository?.save({
       ...prOpDto
     });
   }
 
-  async findProductsOperations(prOpDto: ProductOperations) {
+  async findProductsOperations(prOpDto: ProductOperationsDto) {
 
     let query = this.productOperationsRepository?.createQueryBuilder("product_operations")
-      .addSelect(["product_operations.id", "product_operations.count", "product_operations.code"])
-      .leftJoinAndSelect("product_operations.product", "product")
+      .addSelect(["product_operations.id", "product_operations.count", "product.id", "product.code", "product.name"])
+      .leftJoin("product_operations.product", "product")
+      .leftJoin("product_operations.document", "document");
+
+    // id_document
+    prOpDto.id_document ? query.andWhere("document.id = :id_document", { id_document: prOpDto.id_document }) : null;
 
     return await query.getManyAndCount();
   }
@@ -30,9 +35,9 @@ export class ProductsOperationsService {
       .getOne();
   }
 
-  async update(id: number, prDto: ProductDto) {
+  async update(id: number, prOpDto: ProductOperationsDto) {
 
-    return this.productOperationsRepository?.update(id, { ...prDto});
+    return this.productOperationsRepository?.update(id, { ...prOpDto });
   }
 
   async delete(id: number) {

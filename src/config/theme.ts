@@ -1,5 +1,12 @@
+export const defaultColors = {
+    lightGreen: "#9ACD32", // Light green color
+    lightRed: "#cd3232", // Light green color
+}
+
 export const colors = {
+
     light: {
+        ...defaultColors,
         header: "#ffffff",
         main: "#e8a214",
         primary: "#ffffff",
@@ -11,6 +18,7 @@ export const colors = {
         border: "#c8c8c8",
     },
     dark: {
+        ...defaultColors,
         header: "#121212",
         main: "#e6a726",
         primary: "#121212",
@@ -21,4 +29,5 @@ export const colors = {
         hint: "#666666",
         border: "#4a4a4a",
     },
+
 };

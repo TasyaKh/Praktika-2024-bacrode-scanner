@@ -39,7 +39,6 @@ const LoadingSpinner = (): JSX.Element => {
     <View>
 
       <Animated.View
-        className={"rounded-full "}
         style = {{
           height: 24,
           width: 24,
