@@ -1,6 +1,22 @@
 export const defaultColors = {
-    lightGreen: "#9ACD32", // Light green color
-    lightRed: "#cd3232", // Light green color
+
+    black:"#000",
+    white:"#fff",
+
+    grey_200: "#EEEEEE",
+    green_200: "#C5E1A5",
+    yellow_200:"#FFF59D",
+    orange_200: "#FFAB91",
+
+    grey_400: "#BDBDBD",
+    green_400: "#9CCC65",
+    yellow_400:"#FFEE58",
+    orange_400: "#FF7043",
+
+    grey_700: "#616161",
+    green_700: "#689F38",
+    yellow_700:"#FBC02D",
+    orange_700: "#E64A19",
 }
 
 export const colors = {
@@ -8,7 +24,7 @@ export const colors = {
     light: {
         ...defaultColors,
         header: "#ffffff",
-        main: "#e8a214",
+        main: "#FFB300",
         primary: "#ffffff",
         secondary: "#ededed",
         third:"#e1e1e1",
@@ -20,7 +36,7 @@ export const colors = {
     dark: {
         ...defaultColors,
         header: "#121212",
-        main: "#e6a726",
+        main: "#FFB300",
         primary: "#121212",
         secondary: "#222222",
         third:"#333333",
