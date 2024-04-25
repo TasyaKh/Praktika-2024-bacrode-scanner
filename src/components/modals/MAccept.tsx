@@ -1,4 +1,4 @@
-import { Modal, StyleSheet, View, TextInput, Text, TouchableOpacity } from "react-native";
+import { Modal, StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { ThemeCtx } from "../../context/themeCtx.ts";
 import { colors } from "../../config/theme.ts";
@@ -35,16 +35,16 @@ const MAccept: React.FC<modalVisibleProps> = ({ mVisible, onModalVisibleChanged,
           setModalVisible(!modalVisible);
         }}>
         <View style={styles.centeredView}>
-          <View style={[styles.modalView, { backgroundColor: activeColors.primary, shadowColor:activeColors.main }]}>
+          <View style={[styles.modalView, { backgroundColor: activeColors.primary, shadowColor:activeColors.main, borderColor:activeColors.main }]}>
             <Text  style={[styles.title, { color: activeColors.text }]}>{title}</Text>
 
             <View style={{ flexDirection: "row",  justifyContent: "space-between" }}>
               {/*exit*/}
-              <TouchableOpacity style={[styles.button, {backgroundColor:activeColors.secondary}]}
+              <TouchableOpacity style={[styles.button, {backgroundColor:activeColors.grey_400}]}
                                 onPress={() => setModalVisible(!modalVisible)}>
                 <Text style={styles.buttonText}>отмена</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.confirmButton,  {backgroundColor:activeColors.lightRed}]} onPress={() => {
+              <TouchableOpacity style={[styles.button, styles.confirmButton,  {backgroundColor:activeColors.orange_400}]} onPress={() => {
                 onSaveChapter();
               }}>
                 <Text style={styles.buttonText}>да</Text>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingVertical:20,
     paddingHorizontal:20,
-
+    borderWidth:0.5,
     elevation: 15
   },
   textStyle: {
