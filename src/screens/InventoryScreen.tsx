@@ -5,7 +5,9 @@ import { colors } from "../config/theme.ts";
 import { FAB, Icon } from "@rneui/base";
 import { useDatabaseConnection } from "../hooks/db.createConnection.tsx";
 import { Document } from "../db/entities/document.entity.ts";
-import MAccept from "../components/modals/MAccept.tsx";
+import MDefault from "../components/modals/MAccept.tsx";
+import ButtonStandard from "../components/buttons/ButtonStandard.tsx";
+import InfoMessage from "../components/MessageInfo.tsx";
 
 interface InventoryScreenProps {
   navigation: any;
@@ -17,6 +19,8 @@ const InventoryScreen: React.FC<InventoryScreenProps> = ({ navigation }) => {
   let activeColors = colors[theme.mode];
 
   const [deleteDocId, setDeleteDocId] = useState<number | null>();
+  const [modalClearAllVisible, setModalClearAllVisible] = useState(false);
+
   const DocsList = ({ navigation }) => {
 
     const renderItem = ({ item, index }) => (
@@ -29,8 +33,9 @@ const InventoryScreen: React.FC<InventoryScreenProps> = ({ navigation }) => {
           <Text style={styles.info}> Документ {item.id}</Text>
           <Text
             style={[styles.info, styles.date]}>{item.date_create.toLocaleDateString()} {item.date_create.toLocaleTimeString()}</Text>
-          <TouchableOpacity onPress={() => deleteDoc(item.id)} style={{backgroundColor:activeColors.secondary, padding:5}}>
-            <Icon name={"delete"} color={activeColors.lightRed}></Icon>
+          <TouchableOpacity onPress={() => deleteDoc(item.id)}
+                            style={{ backgroundColor: activeColors.secondary, padding: 5 }}>
+            <Icon name={"delete"} color={activeColors.orange_400}></Icon>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -67,10 +72,17 @@ const InventoryScreen: React.FC<InventoryScreenProps> = ({ navigation }) => {
     });
   };
 
+  const handleDeleteAll = async () => {
+    await docService.deleteAll().then((data) => {
+      getDocs();
+      setModalClearAllVisible(false)
+    });
+  };
+
   const handleAcceptDelete = async () => {
     await docService.delete(deleteDocId).then((data) => {
       getDocs();
-      setDeleteDocId(null)
+      setDeleteDocId(null);
     });
   };
 
@@ -80,16 +92,25 @@ const InventoryScreen: React.FC<InventoryScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <DocsList navigation={navigation} />
+      <View style={styles.settingsView}>
+        <ButtonStandard onPressed={() => setModalClearAllVisible(true)} text={"Очистить все"}
+                        color={activeColors.orange_400} />
+      </View>
+      {data?.docs.length > 0 ? <DocsList navigation={navigation} /> : <InfoMessage text={"Документов нет"}  typeMsg={"info"}/>}
+      {/* add doc */}
       <FAB
-        style={[styles.fabDone]}
+        style={[styles.fabAdd]}
         color={activeColors.main}
         onPress={addDocument}
         icon={<Icon name={"add"} color={activeColors.primary} />}
       />
-      {deleteDocId && <MAccept mVisible={true} handleAccept={handleAcceptDelete} title={"Удалить документ?"}
-                               onModalVisibleChanged={(visible) => setDeleteDocId(visible ? deleteDocId : null)} />}
-
+      {/* modal delete docs */}
+      {deleteDocId && <MDefault mVisible={true} handleAccept={handleAcceptDelete} title={"Удалить документ?"}
+                                onModalVisibleChanged={(visible) => setDeleteDocId(visible ? deleteDocId : null)} />}
+      {/* modal delete all docs */}
+      {modalClearAllVisible &&
+        <MDefault mVisible={modalClearAllVisible} handleAccept={handleDeleteAll} title={"Удалить ВСЕ документы?"}
+                  onModalVisibleChanged={(visible) => setModalClearAllVisible(visible)} />}
     </View>
   );
 };
@@ -99,7 +120,11 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 10
   },
-  fabDone: {
+  settingsView: {
+    flexDirection: "row",
+    justifyContent: "flex-end"
+  },
+  fabAdd: {
     position: "absolute",
     margin: 20,
     right: 0,
@@ -115,12 +140,12 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     flexDirection: "row",
-    alignItems:"center",
+    alignItems: "center",
     justifyContent: "center",
     marginLeft: 20
   },
   info: {
-    fontSize: 16,
+    fontSize: 16
   },
   date: {
     fontSize: 14,

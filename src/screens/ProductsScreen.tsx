@@ -7,6 +7,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useDatabaseConnection } from "../hooks/db.createConnection.tsx";
 import { FAB, Icon } from "@rneui/base";
 import { Product } from "../db/entities/product.entity.ts";
+import InfoMessage from "../components/MessageInfo.tsx";
 
 // Define the parameters type
 type RootStackParamList = {
@@ -92,7 +93,7 @@ const ProductsScreen: React.FC<ProductsScreenProps> = ({ route, navigation }) =>
         <Text style={styles.name}>{item.date_create.toLocaleDateString()} {item.date_create.toLocaleTimeString()}</Text>
         <TouchableOpacity onPress={() => deleteProduct(item.id)}
                           style={{ backgroundColor: activeColors.secondary, padding: 5 }}>
-          <Icon name={"delete"} color={activeColors.lightRed}></Icon>
+          <Icon name={"delete"} color={activeColors.orange_400}></Icon>
         </TouchableOpacity>
       </View>
     );
@@ -111,8 +112,8 @@ const ProductsScreen: React.FC<ProductsScreenProps> = ({ route, navigation }) =>
       <View>
         <Text style={{ color: activeColors.text }}>Последний код: {scannedCode}</Text>
         {dataProd && dataProd.count > 0 ? <ProductList /> :
-          <Text style={{ color: activeColors.text_secondary, fontSize: 16, paddingVertical: 20 }}>Данных нет (сканируйте
-            код)</Text>}
+          <View style={{marginVertical:10}}><InfoMessage text={"Данных нет (сканируйте код)"} typeMsg={"info"} /></View>
+        }
       </View>
       {/* done */}
       {/*<FAB*/}
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold"
   },
-  fabDone: {
+  fabAdd: {
     position: "absolute",
     margin: 20,
     left: 0,
