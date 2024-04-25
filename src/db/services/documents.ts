@@ -35,7 +35,10 @@ export class DocumentsService {
   }
 
   async delete(id: number) {
-    // console.log("delete ", id);
     return await this.documentRepository?.delete(id);
+  }
+
+  async deleteAll() {
+    return await this.documentRepository?.createQueryBuilder("document").delete().execute();
   }
 }
