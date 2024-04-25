@@ -10,7 +10,7 @@ interface Props {
   child?: ReactNode;
 }
 
-const ButtonStandard: React.FC<Props> = ({ onPressed, text, child, color }) => {
+const ButtonDefault: React.FC<Props> = ({ onPressed, text, child, color }) => {
   const theme = useContext(ThemeCtx);
   let activeColors = colors[theme.mode];
 
@@ -39,4 +39,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ButtonStandard;
+export default ButtonDefault;

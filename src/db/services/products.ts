@@ -46,11 +46,25 @@ export class ProductsService {
   }
 
   async update(id: number, prDto: ProductDto) {
-
     return this.productRepository?.update(id, { ...prDto });
   }
 
   async delete(id: number) {
     return await this.productRepository?.delete(id);
   }
+
+  // Function to convert products data into CSV format
+   convertToCSV = (data: Product[]): string => {
+
+    const csvRows = [];
+    const headers = ["штрихкод","дата"]
+    csvRows.push(headers.join(','));
+
+    for (const product of data) {
+      const values = [product.code, product.date_create.toString()]
+      csvRows.push(values.join(','));
+    }
+
+    return csvRows.join('\n');
+  };
 }

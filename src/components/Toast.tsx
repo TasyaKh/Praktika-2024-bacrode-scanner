@@ -61,9 +61,11 @@ const Toast = React.forwardRef<ToastRef, ToastProps>((props, ref) => {
           borderColor: toastStyles[mode].color,
           flexDirection: "row",
           elevation:16,
+          padding:10,
+          opacity:0.95,
+          borderRadius:10,
           shadowColor:activeColors.main
         }}
-        className={"p-2 rounded-xl border opacity-95"}
       >
         <FontAwesome6 name={toastStyles[mode].icon}
                       color={toastStyles[mode].color} size={20} />

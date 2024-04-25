@@ -1,6 +1,7 @@
-import React, {} from "react";
+import React, { useEffect } from "react";
 import "react-native-reanimated";
 import {
+  PermissionsAndroid,
   SafeAreaView,
 
   useColorScheme,
@@ -18,6 +19,7 @@ import InventoryScreen from "./src/screens/InventoryScreen.tsx";
 import TabBar from "./src/components/nav/TabBar.tsx";
 import ProductsScreen from "./src/screens/ProductsScreen.tsx";
 import BarcodeScannerScreenBack from "./src/screens/BarcodeScannerScreenBack.tsx";
+import SettingsScreen from "./src/screens/SettingsScreen.tsx";
 
 // import 'react-native-gesture-handler'
 
@@ -29,10 +31,31 @@ function AppTabs() {
                    tabBar={props => <TabBar {...props} />}>
       {/*<Tab.Screen name="barcode" component={BarcodeScannerScreen} />*/}
       <Tab.Screen name="inventory" component={InventoryScreen} />
+      <Tab.Screen name="settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
 }
 
+async function requestStoragePermission() {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      {
+        title: 'Storage Permission',
+        message: 'Нужен доступ к хранилищу',
+        buttonNegative: 'Отмена',
+        buttonPositive: 'Разрешить',
+      },
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('Storage permission granted');
+    } else {
+      console.log('Storage permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+}
 
 function App(): React.JSX.Element {
 
@@ -60,6 +83,9 @@ function App(): React.JSX.Element {
     }
   };
 
+  useEffect(() => {
+    requestStoragePermission()
+  }, []);
 
   return (
     <ThemeCtx.Provider value={theme}>

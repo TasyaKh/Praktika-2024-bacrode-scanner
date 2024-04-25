@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 
 import {View, Pressable, Dimensions, StyleSheet, Text} from 'react-native'
-import NavigationIcon from "./NavigationIcon.tsx";
+import NavigationElem from "./NavigationElem.tsx";
 import {ThemeCtx} from "../../context/themeCtx.ts";
 import {colors} from "../../config/theme.ts";
 
@@ -40,7 +40,7 @@ const TabBar = ({state, descriptors, navigation}: any) => {
                         <Pressable
                             onPress={onPress}>
                             <View style={{justifyContent: 'center', alignItems: 'center', flex: 1,}}>
-                                <NavigationIcon route={label} isFocused={isFocused}/>
+                                <NavigationElem route={label} isFocused={isFocused}/>
                             </View>
                         </Pressable>
                     </View>

@@ -17,7 +17,7 @@ interface IcoNameProps {
 
 
 
-const NavigationIcon = ({route, isFocused}: NavigationIconProps) => {
+const NavigationElem = ({route, isFocused}: NavigationIconProps) => {
     const theme = useContext(ThemeCtx);
     let activeColors = colors[theme.mode];
 
@@ -38,6 +38,8 @@ const NavigationIcon = ({route, isFocused}: NavigationIconProps) => {
                 return <IcoName name={"штрихкод"} isFocused={isFocues} icon={"qr-code"}/>
             case "inventory":
                 return <IcoName name={"инвентарь"} isFocused={isFocues} icon={"inventory"}/>
+            case "settings":
+                return <IcoName name={"настройки"} isFocused={isFocues} icon={"settings"}/>
             default:
                 break;
         }
@@ -53,4 +55,4 @@ const NavigationIcon = ({route, isFocused}: NavigationIconProps) => {
 
 const styles = StyleSheet.create({})
 
-export default NavigationIcon
+export default NavigationElem
