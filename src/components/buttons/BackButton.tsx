@@ -13,7 +13,7 @@ const BackButton: React.FC<Props> = ({onPressed }) => {
   let activeColors = colors[theme.mode];
 
   return (
-      <TouchableOpacity onPress={onPressed} style={[styles.backButton]}>
+      <TouchableOpacity onPress={onPressed} style={[styles.button]}>
         <Icon name="arrow-back" size={24} color={activeColors.main} />
         <Text style={[styles.backText, {color:activeColors.text}]}>Назад</Text>
       </TouchableOpacity>
@@ -22,7 +22,7 @@ const BackButton: React.FC<Props> = ({onPressed }) => {
 
 
 const styles = StyleSheet.create({
-  backButton: {
+  button: {
     flexDirection: "row",
     alignItems: "center",
     marginVertical:18

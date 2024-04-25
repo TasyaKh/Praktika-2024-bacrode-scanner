@@ -7,15 +7,12 @@ import {
   View
 } from "react-native";
 
-
 import { DarkTheme, DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Icon } from "@rneui/base";
 import { ThemeCtx } from "./src/context/themeCtx.ts";
 import { colors } from "./src/config/theme.ts";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import BarcodeScannerScreen from "./src/screens/BarcodeScannerScreen.tsx";
 import { DatabaseConnectionProvider } from "./src/hooks/db.createConnection";
 import InventoryScreen from "./src/screens/InventoryScreen.tsx";
 import TabBar from "./src/components/nav/TabBar.tsx";
