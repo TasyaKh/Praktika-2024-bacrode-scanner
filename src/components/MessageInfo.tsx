@@ -52,6 +52,7 @@ const InfoMessage: React.FC<InfoMessageProps> = ({ text, typeMsg }) => {
 
 const styles = StyleSheet.create({
   container: {
+    opacity:0.9,
     padding: 10,
     borderRadius: 5,
     borderWidth:1,

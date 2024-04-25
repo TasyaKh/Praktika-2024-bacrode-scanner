@@ -6,7 +6,7 @@ import { FAB, Icon } from "@rneui/base";
 import { useDatabaseConnection } from "../hooks/db.createConnection.tsx";
 import { Document } from "../db/entities/document.entity.ts";
 import MDefault from "../components/modals/MAccept.tsx";
-import ButtonStandard from "../components/buttons/ButtonStandard.tsx";
+import ButtonDefault from "../components/buttons/ButtonStandard.tsx";
 import InfoMessage from "../components/MessageInfo.tsx";
 
 interface InventoryScreenProps {
@@ -79,6 +79,10 @@ const InventoryScreen: React.FC<InventoryScreenProps> = ({ navigation }) => {
     });
   };
 
+  const onCSVCreate = async () => {
+
+  };
+
   const handleAcceptDelete = async () => {
     await docService.delete(deleteDocId).then((data) => {
       getDocs();
@@ -93,7 +97,8 @@ const InventoryScreen: React.FC<InventoryScreenProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.settingsView}>
-        <ButtonStandard onPressed={() => setModalClearAllVisible(true)} text={"Очистить все"}
+        <ButtonDefault text={"CSV"} onPressed={onCSVCreate} color={activeColors.green_400} child={<Icon name={"upload"} color={activeColors.text}/>}/>
+        <ButtonDefault onPressed={() => setModalClearAllVisible(true)} text={"Очистить все"}
                         color={activeColors.orange_400} />
       </View>
       {data?.docs.length > 0 ? <DocsList navigation={navigation} /> : <InfoMessage text={"Документов нет"}  typeMsg={"info"}/>}
@@ -115,14 +120,15 @@ const InventoryScreen: React.FC<InventoryScreenProps> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const styles= StyleSheet.create({
   container: {
     flex: 1,
     margin: 10
   },
   settingsView: {
+    marginBottom:10,
     flexDirection: "row",
-    justifyContent: "flex-end"
+    justifyContent: "space-between"
   },
   fabAdd: {
     position: "absolute",

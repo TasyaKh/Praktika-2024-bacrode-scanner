@@ -1,5 +1,5 @@
 import React, { ReactNode, useContext } from "react";
-import { Text, TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from "react-native";
+import { Text, TouchableOpacity, StyleSheet } from "react-native";
 import { ThemeCtx } from "../../context/themeCtx";
 import { colors } from "../../config/theme";
 
@@ -15,7 +15,7 @@ const ButtonStandard: React.FC<Props> = ({ onPressed, text, child, color }) => {
   let activeColors = colors[theme.mode];
 
   return (
-    <TouchableOpacity onPress={onPressed} style={[styles.button, { backgroundColor: color }]}>
+    <TouchableOpacity onPress={onPressed} style={[styles.button, {  borderColor: color ?? activeColors.grey_400}]}>
       <Text style={[styles.backText, { color: activeColors.text }]}>{text}</Text>
       {child}
     </TouchableOpacity>
@@ -25,6 +25,7 @@ const ButtonStandard: React.FC<Props> = ({ onPressed, text, child, color }) => {
 
 const styles = StyleSheet.create({
   button: {
+    borderWidth:1,
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 10,
