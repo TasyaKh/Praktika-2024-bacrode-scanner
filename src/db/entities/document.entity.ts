@@ -1,20 +1,19 @@
 import {
+  Column,
   CreateDateColumn,
-  Entity, JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
+  Entity,
+  PrimaryGeneratedColumn
 } from "typeorm";
 
-@Entity('document')
+@Entity("document")
 export class Document {
 
   @PrimaryGeneratedColumn()
-  id:number;
+  id: number;
 
   @CreateDateColumn()
-  date_create:Date
+  date_create: Date;
 
-  @ManyToOne(() => Document, (ch) => ch.id)
-  @JoinColumn([{ name: 'id_document' }])
-  document: Document;
+  @Column()
+  name: string;
 }

@@ -4,6 +4,8 @@
     "allowJs": true,
     "checkJs": false,
     "moduleResolution": "node",
+//    "module": "commonjs",    // or ES2015, ES2020
+//    "target": "es6",
     "typeRoots": [
       "./src/types"
     ],

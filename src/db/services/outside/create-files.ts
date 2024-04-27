@@ -10,6 +10,7 @@ export class FilesService {
 
   async createCSVFile(name: string, type: string, csvData: any) {
     let res: IResult = {};
+    // path
     const pathToWrite = `${this.dir}/${name}.${type}`;
     if (this.dir) {
       await RNFetchBlob.fs

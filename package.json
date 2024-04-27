@@ -1,20 +1,16 @@
 {
   "name": "barcode-scanner",
   "version": "0.0.1",
-  "private": true,
+  "main": "App.tsx",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
-    "start": "react-native start",
+    "start": "react-native start --port 9988",
     "test": "jest",
     "clean": "rimraf dist",
     "watch:build": "tsc --watch",
-    "typeorm": "typeorm-ts-node-commonjs",
-    "migrations:generate": "npm run typeorm migration:generate -- -d src/typeorm.config.ts src/config/migrations/auto",
-    "migrations:run": "npm run typeorm migration:run -- -d src/typeorm.config.ts",
-    "migrations:revert": "npm run typeorm migration:revert -- -d src/typeorm.config.ts",
-    "migrations:create": "npm run typeorm migration:create ./src/migrations/userInit"
+    "typeorm": "typeorm-ts-node-commonjs"
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4.6.0",

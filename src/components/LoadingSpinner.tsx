@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { StyleSheet, View, Animated, Text } from "react-native";
-import { Button } from "@rneui/base";
 import { ThemeCtx } from "../context/themeCtx";
 import { colors } from "../config/theme";
 

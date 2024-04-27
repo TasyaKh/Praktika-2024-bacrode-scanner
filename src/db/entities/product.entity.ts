@@ -4,7 +4,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn
 } from "typeorm";
-import { Document } from "./document.entity.ts";
+import { Document } from "./document.entity";
 
 @Entity('product')
 export class Product {

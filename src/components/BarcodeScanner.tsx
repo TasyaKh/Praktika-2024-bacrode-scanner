@@ -1,7 +1,7 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import {
-  Camera, Point,
+  Camera, CameraRuntimeError,
   useCameraDevice,
   useCameraPermission,
   useCodeScanner
@@ -9,8 +9,7 @@ import {
 
 import { ThemeCtx } from "../context/themeCtx.ts";
 import { colors } from "../config/theme.ts";
-import { Gesture, GestureDetector, TapGestureHandler } from "react-native-gesture-handler";
-import { runOnJS } from "react-native-reanimated";
+import Toast, { ToastRef } from "./Toast.tsx";
 
 
 type BarcodeScannerScreenProps = {
@@ -29,6 +28,7 @@ const NoCameraErrorView = () => {
 const BarcodeScanner: React.FC<BarcodeScannerScreenProps> = ({ onScanned }) => {
   const theme = useContext(ThemeCtx);
   let activeColors = colors[theme.mode];
+  const toastRef = useRef<ToastRef>(null);
 
   const { hasPermission, requestPermission } = useCameraPermission();
   const camera = useRef<Camera>(null);
@@ -39,7 +39,10 @@ const BarcodeScanner: React.FC<BarcodeScannerScreenProps> = ({ onScanned }) => {
   const [scanning, setScanning] = useState(false);
 
   const codeScanner = useCodeScanner({
-    codeTypes: ["ean-13"],
+    codeTypes: ["code-39", "code-93", "code-128", "codabar"
+      , "ean-13", "ean-8", "itf", "upc-e"
+      , "upc-a", "qr", "pdf-417", "aztec"
+      , "data-matrix"],
     onCodeScanned: (codes) => {
       const code = codes[0];
       // console.log(`Scanned ${codes.length} codes!`)
@@ -90,6 +93,11 @@ const BarcodeScanner: React.FC<BarcodeScannerScreenProps> = ({ onScanned }) => {
     </View>);
   }
 
+  const onCameraError = (error: CameraRuntimeError) => {
+    toastRef?.current?.startToast(error.message, "error");
+    console.log("camera error ", error);
+  };
+
   return (
     <View style={styles.container}>
       {scanning ? <Text> process ... </Text> : null}
@@ -99,15 +107,16 @@ const BarcodeScanner: React.FC<BarcodeScannerScreenProps> = ({ onScanned }) => {
       </View>
       <View style={styles.cameraContainer}>
 
-          <Camera
-            ref={camera}
-            style={[StyleSheet.absoluteFill]}
-            device={device}
-            codeScanner={codeScanner}
-            enableZoomGesture={true}
-            focusable={true}
-            isActive={true}
-          />
+        <Camera
+          ref={camera}
+          style={[StyleSheet.absoluteFill]}
+          device={device}
+          codeScanner={codeScanner}
+          enableZoomGesture={true}
+          focusable={true}
+          onError={onCameraError}
+          isActive={true}
+        />
 
       </View>
 
@@ -116,6 +125,7 @@ const BarcodeScanner: React.FC<BarcodeScannerScreenProps> = ({ onScanned }) => {
         <Text style={[{ color: activeColors.text, fontWeight: "bold", fontSize: 16 }]}>{scannedCodeSlice}</Text>
       </View>
 
+      <Toast ref={toastRef} />
     </View>
   );
 };

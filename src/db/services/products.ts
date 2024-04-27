@@ -14,7 +14,7 @@ export class ProductsService {
   }
 
   async create(prDto: ProductDto) {
-    let document:Document = null;
+    let document: Document = null;
 
     if (prDto.id_document)
       document = await this.documentRepository.findOneBy({ id: prDto.id_document });
@@ -28,8 +28,9 @@ export class ProductsService {
   async findProducts(prDto: ProductDto) {
 
     let query = this.productRepository?.createQueryBuilder("product")
-      .addSelect(["product.id", "product.code"])
-      .leftJoin("product.document", "document");
+      .addSelect(["product.id", "product.code", "document.id", "document.name"])
+      .leftJoin("product.document", "document")
+      .orderBy("product.date_create", "DESC");
 
     // id_document
     prDto.id_document ? query.andWhere("document.id = :id_document", { id_document: prDto.id_document }) : null;
@@ -54,17 +55,17 @@ export class ProductsService {
   }
 
   // Function to convert products data into CSV format
-   convertToCSV = (data: Product[]): string => {
+  convertToCSVProducts = (data: Product[]): string => {
 
     const csvRows = [];
-    const headers = ["штрихкод","дата"]
-    csvRows.push(headers.join(','));
+    const headers = ["штрихкод", "дата", "документ"];
+    csvRows.push(headers.join(","));
 
     for (const product of data) {
-      const values = [product.code, product.date_create.toString()]
-      csvRows.push(values.join(','));
+      const values = [product.code, product.date_create.toString(), product.document.name];
+      csvRows.push(values.join(","));
     }
 
-    return csvRows.join('\n');
+    return csvRows.join("\n");
   };
 }

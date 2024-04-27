@@ -10,16 +10,30 @@ export class DocumentsService {
   }
 
   async create(docDto: DocumentDto) {
+
+    let name = docDto.name
+    // Get the current maximum ID
+    if(!name){
+      const maxIdResult = await this.documentRepository.maximum("id")
+      const maxId = maxIdResult || 0;
+
+      // Generate the document name
+      name = `Документ ${maxId + 1}`;
+    }
+
     return await this.documentRepository?.save({
-      ...docDto,
-      date_create:new Date()
-    });
+      name: name,
+      date_create: new Date()
+    }).catch((err) => {
+      console.log(err)
+    })
   }
 
   async findDocuments(docDto: DocumentDto) {
 
     let query = this.documentRepository?.createQueryBuilder("document")
-      .addSelect(["document.id", "document.date_create"]);
+      .addSelect(["document.id", "document.date_create", "document.name"])
+      .orderBy("document.date_create", "DESC")
 
     return await query.getManyAndCount();
   }

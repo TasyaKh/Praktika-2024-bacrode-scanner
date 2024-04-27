@@ -6,7 +6,6 @@ import setupConnectionLocalDb from "../config/db.connection";
 import { ActivityIndicator } from "react-native";
 import { ProductsService } from "../db/services/products.ts";
 import { DocumentsService } from "../db/services/documents.ts";
-import { ProductOperations } from "../db/entities/product-operations.entity.ts";
 import { ProductsOperationsService } from "../db/services/products-operations.ts";
 
 interface Props {
@@ -44,7 +43,7 @@ export const DatabaseConnectionProvider: React.FC<Props> = ({ children }) => {
     <DatabaseConnectionContext.Provider
       value={{
         prService: new ProductsService(connection),
-        productOpService: new ProductsOperationsService(connection),
+        // productOpService: new ProductsOperationsService(connection),
         docService: new DocumentsService(connection)
       }}
     >

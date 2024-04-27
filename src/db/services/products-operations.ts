@@ -1,5 +1,4 @@
 import { DataSource, Repository } from "typeorm/browser";
-import { ProductDto } from "../dto/product.dto.ts";
 import { ProductOperations } from "../entities/product-operations.entity.ts";
 import { ProductOperationsDto } from "../dto/product-operations.dto.ts";
 

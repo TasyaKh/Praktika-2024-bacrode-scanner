@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ThemeCtx } from "../context/themeCtx.ts";
 import { colors } from "../config/theme.ts";
@@ -11,6 +11,9 @@ import InfoMessage from "../components/MessageInfo.tsx";
 import { FilesService } from "../db/services/outside/create-files.ts";
 import Toast, { ToastRef } from "../components/Toast.tsx";
 import { EmailService, IAttachment } from "../db/services/outside/email.ts";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { EMAIL } from "../config/local-storage-names.ts";
 
 interface InventoryScreenProps {
   navigation: any;
@@ -33,22 +36,27 @@ const InventoryScreen: React.FC<InventoryScreenProps> = ({ navigation }) => {
         style={styles.item}
         onPress={() => navigation.navigate("Products", { id_document: item.id })}
       >
-        <Icon name="description" size={24} color={activeColors.main} />
+        <Icon name="description" size={24} color={activeColors.main} style={{flex:1}} />
         <View style={styles.infoContainer}>
-          <Text style={styles.info}> Документ {item.id}</Text>
+          <Text style={[styles.info, {flex:1}]}> {item.name}</Text>
           <Text
-            style={[styles.info, styles.date]}>{item.date_create.toLocaleDateString()} {item.date_create.toLocaleTimeString()}</Text>
+            style={[styles.info, styles.date, {flex:1}]}>{item.date_create.toLocaleDateString()} {item.date_create.toLocaleTimeString()}</Text>
+
+        </View>
+        <View style={{ flex:1 }}>
           <TouchableOpacity onPress={() => deleteDoc(item.id)}
                             style={{ backgroundColor: activeColors.secondary, padding: 5 }}>
             <Icon name={"delete"} color={activeColors.orange_400}></Icon>
           </TouchableOpacity>
         </View>
+
       </TouchableOpacity>
     );
 
     return (
       <FlatList
         data={data?.docs}
+        contentContainerStyle={{ paddingBottom: 100 }}
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
       />
@@ -89,7 +97,7 @@ const InventoryScreen: React.FC<InventoryScreenProps> = ({ navigation }) => {
     const products = await prService.findProducts({});
 
     // Convert products data to CSV format
-    const csvData = prService.convertToCSV(products[0]);
+    const csvData = prService.convertToCSVProducts(products[0]);
 
     const fS = new FilesService();
 
@@ -102,7 +110,7 @@ const InventoryScreen: React.FC<InventoryScreenProps> = ({ navigation }) => {
       const resp = (error: string) => {
         toastRef?.current?.startToast(error, "error");
       };
-      await eS.sendEmail([attachment], resp, 'Отчет по инвентаризации');
+      await eS.sendEmail([attachment], resp, "Отчет по инвентаризации");
       // toastRef?.current?.startToast(csv.msg.msg, "save");
     }
   };
@@ -114,10 +122,11 @@ const InventoryScreen: React.FC<InventoryScreenProps> = ({ navigation }) => {
     });
   };
 
-  useEffect(() => {
-    getDocs();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      getDocs();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -165,25 +174,25 @@ const styles = StyleSheet.create({
     bottom: 80
   },
   item: {
-
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 20,
+    flexDirection: 'row',
+    paddingVertical: 20,
+    paddingHorizontal:10,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc"
   },
   infoContainer: {
     flexDirection: "row",
+    flex:5,
+    justifyContent: "space-between",
     alignItems: "center",
-    justifyContent: "center",
-    marginLeft: 20
+    marginLeft: 10,
   },
   info: {
-    fontSize: 16
+    fontSize: 14,
   },
   date: {
-    fontSize: 14,
-    marginHorizontal: 20
+    fontSize: 12,
+
   },
   document: {
     fontSize: 18,

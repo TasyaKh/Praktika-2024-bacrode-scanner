@@ -1,32 +1,27 @@
+import { AppDataSource } from "./typeorm.config.ts";
 import { DataSource } from "typeorm/browser";
-import { Product } from "../db/entities/product.entity.ts";
-import { Document } from "../db/entities/document.entity.ts";
-import { ProductOperations } from "../db/entities/product-operations.entity.ts";
 
 const setupConnectionLocalDb = async () => {
 
   try {
-    const AppDataSource = new DataSource({
-      type: "react-native",
-      database: "barcode_scanner",
-      location: "default",
-      logging: ["error", "query", "schema"],
-      synchronize: true,
-      entities: [Product, Document, ProductOperations]
-    });
-
+    let dSource: DataSource = null;
     await AppDataSource.initialize()
-      .then(() => {
+      .then((dataSource) => {
         console.log("Data Source has been initialized!");
+        dSource = dataSource;
       })
       .catch((err) => {
         console.error("Error during Data Source initialization", err);
       });
 
+    // await dSource.dropDatabase()
+    // init database
+    await dSource.runMigrations();
+
     return AppDataSource;
 
   } catch (error) {
-    console.log(error);
+    console.log("error", error.log);
   }
 };
 

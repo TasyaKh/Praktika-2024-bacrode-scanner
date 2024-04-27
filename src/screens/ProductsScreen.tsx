@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ThemeCtx } from "../context/themeCtx.ts";
 import { colors } from "../config/theme.ts";
@@ -8,6 +8,10 @@ import { useDatabaseConnection } from "../hooks/db.createConnection.tsx";
 import { FAB, Icon } from "@rneui/base";
 import { Product } from "../db/entities/product.entity.ts";
 import InfoMessage from "../components/MessageInfo.tsx";
+import MAccept from "../components/modals/MAccept.tsx";
+import InputCustom from "../components/InputCustom.tsx";
+import toast, { ToastRef } from "../components/Toast.tsx";
+import Toast from "../components/Toast.tsx";
 
 // Define the parameters type
 type RootStackParamList = {
@@ -33,15 +37,18 @@ const ProductsScreen: React.FC<ProductsScreenProps> = ({ route, navigation }) =>
   let activeColors = colors[theme.mode];
 
   const { id_document } = route.params;
+  const [docName, setDocName] = useState("");
+
   const [scannedCode, setScannedCode] = useState("-");
 
-  const { prService } = useDatabaseConnection();
+  const toastRef = useRef<ToastRef>(null);
+  const { prService, docService } = useDatabaseConnection();
   const [dataProd, setDataProd] = useState<{
     prod: Product[],
     count: number
   }>();
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalRenameVisible, setIsModalRenameVisible] = useState(false);
 
   const getProducts = async () => {
 
@@ -64,6 +71,20 @@ const ProductsScreen: React.FC<ProductsScreenProps> = ({ route, navigation }) =>
     });
   };
 
+  const renameDocument = async () => {
+    await docService.update(id_document, { name: docName }).then((data) => {
+      toastRef?.current?.startToast("сохранено", "save");
+      setIsModalRenameVisible(false);
+    });
+  };
+
+  const getDocument = async () => {
+    await docService.findOne(id_document).then((data) => {
+      setDocName(data.name ?? "");
+    });
+  };
+
+
   const handleTakePhoto = () => {
     navigation.navigate("BarcodeScannerBack", {
       onPhotoTaken: async (item) => {
@@ -75,24 +96,28 @@ const ProductsScreen: React.FC<ProductsScreenProps> = ({ route, navigation }) =>
 
 
   useEffect(() => {
-
-
     navigation.setOptions({
-      title: `Документ ${id_document}`
+      headerTitle: () => (
+        <TouchableOpacity onPress={() => setIsModalRenameVisible(true)} style={{ minWidth: 40 }}>
+          <Text style={{ color: activeColors.main }}>{docName ?? "-"}</Text>
+        </TouchableOpacity>)
     });
+  }, [docName]);
 
-    getProducts().then(() => {
-    });
+  useEffect(() => {
+    getDocument();
+    getProducts();
   }, []);
 
   const ProductList = () => {
     const renderItem = ({ item, index }: { item: Product, index: number }) => (
       <View style={styles.item}>
-        <Text style={styles.name}>{index + 1}</Text>
-        <Text style={styles.code}>{item.code ?? "-"}</Text>
-        <Text style={styles.name}>{item.date_create.toLocaleDateString()} {item.date_create.toLocaleTimeString()}</Text>
+        <Text style={[styles.name, { flex: 1 }]}>{index + 1}</Text>
+        <Text style={[styles.code, { flex: 5 }]}>{item.code ?? "-"}</Text>
+        <Text
+          style={[styles.name, { flex: 5 }]}>{item.date_create.toLocaleDateString()} {item.date_create.toLocaleTimeString()}</Text>
         <TouchableOpacity onPress={() => deleteProduct(item.id)}
-                          style={{ backgroundColor: activeColors.secondary, padding: 5 }}>
+                          style={{ backgroundColor: activeColors.secondary, padding: 5, flex: 1 }}>
           <Icon name={"delete"} color={activeColors.orange_400}></Icon>
         </TouchableOpacity>
       </View>
@@ -102,6 +127,7 @@ const ProductsScreen: React.FC<ProductsScreenProps> = ({ route, navigation }) =>
       <FlatList
         data={dataProd?.prod}
         renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: 100 }}
         keyExtractor={item => item.id.toString()}
       />
     );
@@ -112,23 +138,29 @@ const ProductsScreen: React.FC<ProductsScreenProps> = ({ route, navigation }) =>
       <View>
         <Text style={{ color: activeColors.text }}>Последний код: {scannedCode}</Text>
         {dataProd && dataProd.count > 0 ? <ProductList /> :
-          <View style={{marginVertical:10}}><InfoMessage text={"Данных нет (сканируйте код)"} typeMsg={"info"} /></View>
+          <View style={{ marginVertical: 10 }}><InfoMessage text={"Данных нет (сканируйте код)"}
+                                                            typeMsg={"info"} /></View>
         }
       </View>
-      {/* done */}
-      {/*<FAB*/}
-      {/*  style={[styles.fabDone]}*/}
-      {/*  color={activeColors.lightGreen}*/}
-      {/*  onPress={addProduct}*/}
-      {/*  icon={<Icon name={"done"} color={activeColors.primary} />}*/}
-      {/*/>*/}
-      {/* photo */}
+      {/* scan code button */}
       <FAB
         style={[styles.fabPhoto]}
         color={activeColors.main}
         onPress={handleTakePhoto}
         icon={<Icon name={"qr-code"} color={activeColors.primary} />}
       />
+      {/* update name of document */}
+      {isModalRenameVisible &&
+        <MAccept mVisible={isModalRenameVisible}
+                 onModalVisibleChanged={(v) => {
+                   setIsModalRenameVisible(v);
+                 }} handleAccept={renameDocument} title={"Переименовать документ?"}
+                 childBody={
+                   <View>
+                     <InputCustom value={docName} lengthMax={30} onChangeText={(n) => setDocName(n)}></InputCustom>
+                   </View>} />}
+      <Toast ref={toastRef} />
+
     </View>
   );
 };
