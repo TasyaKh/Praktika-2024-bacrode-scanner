@@ -63,7 +63,7 @@ export class ProductsService {
 
     for (const product of data) {
       const values = [product.code, product.date_create.toString(), product.document.name];
-      csvRows.push(values.join(","));
+      csvRows.push(values.join(";"));
     }
 
     return csvRows.join("\n");
