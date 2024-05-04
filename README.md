@@ -1,5 +1,8 @@
 # Сканнер штрихкодов
-
+![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![React Native](https://img.shields.io/badge/react_native-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
 ## Описание
 
 Приложение предназначено для сканирования штрихкодов с помощью телефона, используется mlkit библиотека (подробнее https://developers.google.com/ml-kit/vision/barcode-scanning/android).
